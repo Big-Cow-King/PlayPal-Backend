@@ -8,6 +8,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def send_response(status, message, error=None):
@@ -27,22 +28,23 @@ def send_response(status, message, error=None):
     if error is not None:
         response_data['error'] = error
 
-    return JsonResponse(response_data,status=status)
+    return JsonResponse(response_data, status=status)
 
 
+@csrf_exempt
 def register_user(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            # save the data in the database
-            form.save()
-            username = form.cleaned_data.get('username')
+        username = request.POST.get('Username', '')
+        password = request.POST.get('Password',
+                                    '')  # 这个版本更加安全，如果没有password，default会用''
+        if username != '' and password != '':
+            User.objects.create_user(username=username, password=password)
             messages = f'Account created for {username}!'
-            send_response(200, messages)
+            return send_response(200, messages)
         else:
-            errors = form.errors
+            error = {"error": [username, password]}
             messages = f'FAILED: Account created!'
-            send_response(400, messages,errors)
+            return send_response(400, messages, error)
     else:
         messages = f'FAILED: method is not POST'
-        send_response(405, messages)
+        return send_response(405, messages)
