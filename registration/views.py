@@ -34,20 +34,25 @@ def send_response(status, message, error=None):
 @csrf_exempt
 def register_user(request):
     if request.method == 'POST':
-        username = request.POST.get('Username', '')
-        password = request.POST.get('Password',
+        username = request.POST.get('username', '')
+        password = request.POST.get('password',
                                     '')  # 这个版本更加安全，如果没有password，default会用''
+        email = request.POST.get('email', '')
         if User.objects.filter(username=username).exists():
             error = {"error": "Username already exists"}
             messages = f'FAILED: Account {username}creation failed - Username already exists'
             return send_response(409, messages, error)
-        if username != '' and password != '':
-            User.objects.create_user(username=username, password=password)
+        if User.objects.filter(email=email).exists():
+            error = {"error": "email already exists"}
+            messages = f'FAILED: email {email} creation failed - email already exists'
+            return send_response(409, messages, error)
+        if username != '' and password != '' and email != '':
+            User.objects.create_user(username=username, password=password,email=email)
             messages = f'Account created for {username}!'
             return send_response(200, messages)
         else:
-            error = {"error": [username, password]}
-            messages = f'FAILED: Account created!'
+            error = {"error": [username, password,email]}
+            messages = f'FAILED: Account creation failed!'
             return send_response(400, messages, error)
     else:
         messages = f'FAILED: method is not POST'
