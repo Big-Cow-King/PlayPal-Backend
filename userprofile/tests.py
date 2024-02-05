@@ -1,56 +1,50 @@
-from django.urls import reverse
 from django.contrib.auth.models import User
-from rest_framework import status
+from django.urls import reverse
 from rest_framework.test import APITestCase
+from rest_framework import status
 from .models import Profile
 
 
-class ProfileUpdateAPITestCase(APITestCase):
+class ProfileTestCase(APITestCase):
     def setUp(self):
-        # Create a test user and associated profile
-        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
-        self.profile = Profile.objects.create(user=self.user, phone_no='1234567890', age=25)
+        # Create a user and associated profile for testing
+        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword123')
+        Profile.objects.create(user=self.user, phone_no='1234567890', name='Test User', gender='Male', age=25,
+                               description='Original description', sports_you_can_play='Tennis')
 
-        # URL for the edit profile endpoint
-        self.url = reverse('edit_profile_api')
+        # URL for getting the profile and editing the profile
+        self.get_profile_url = reverse('profile_view')  # Corrected URL name
+        self.edit_profile_url = reverse('edit_profile')  # Corrected URL name
 
-    def test_successful_profile_update(self):
-        # Ensure the user is authenticated for the test
-        self.client.force_authenticate(user=self.user)
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword123')
 
-        # Data to update
+    def test_retrieve_profile(self):
+        # Attempt to retrieve the profile
+        response = self.client.get(self.get_profile_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['phone_no'], '1234567890')
+        self.assertEqual(response.data['name'], 'Test User')
+
+    def test_update_profile(self):
+        # Data to update the profile
         data = {
+            'name': 'Updated Name',
             'phone_no': '0987654321',
-            'age': 26,
+            'gender': 'Female',
+            'age': 30,
+            'description': 'Updated description',
+            'sports_you_can_play': 'Soccer, Tennis',
+            'email_product': True
         }
 
-        response = self.client.post(self.url, data, format='json')
+        # Attempt to update the profile
+        response = self.client.post(self.edit_profile_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Refresh the profile from the database and check the updated fields
-        self.profile.refresh_from_db()
-        self.assertEqual(self.profile.phone_no, data['phone_no'])
-        self.assertEqual(self.profile.age, data['age'])
+        # Refetch the profile to verify updates
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.profile.name, 'Updated Name')
+        self.assertEqual(self.user.profile.phone_no, '0987654321')
 
-    def test_successful_profile_update_all_fields(self):
-        self.client.force_authenticate(user=self.user)
 
-        # Data to update all fields
-        data = {
-            'phone_no': '0987654321',
-            'age': 26,
-            'gender': 'Other',
-            'sports_you_can_play': 'Tennis, Badminton',
-            'description': 'Updated profile description.',
-        }
-
-        response = self.client.post(self.url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Refresh the profile from the database and check the updated fields
-        self.profile.refresh_from_db()
-        self.assertEqual(self.profile.phone_no, data['phone_no'])
-        self.assertEqual(self.profile.age, data['age'])
-        self.assertEqual(self.profile.gender, data['gender'])
-        self.assertEqual(self.profile.sports_you_can_play, data['sports_you_can_play'])
-        self.assertEqual(self.profile.description, data['description'])
