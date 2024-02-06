@@ -18,7 +18,7 @@ def login_view(request):
             refresh_token = str(refresh)
             access_token = str(access)
             message = f"successfully get username={username} from database"
-            return send_response(200, message, token={refresh_token,access_token})
+            return send_response(200, message, token={"refresh" : refresh_token,"access" : access_token})
         else:
             message = f"username or password incorrect"
             return send_response(404, message)
