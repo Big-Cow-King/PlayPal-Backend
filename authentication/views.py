@@ -3,7 +3,7 @@
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken,AccessToken
 
 
 @csrf_exempt
@@ -14,9 +14,11 @@ def login_view(request):
 
         if user := authenticate(username=username, password=password):
             refresh = RefreshToken.for_user(user)
-            access_token = str(refresh)
+            access = AccessToken.for_user(user)
+            refresh_token = str(refresh)
+            access_token = str(access)
             message = f"successfully get username={username} from database"
-            return send_response(200, message, token=access_token)
+            return send_response(200, message, token={refresh_token,access_token})
         else:
             message = f"username or password incorrect"
             return send_response(404, message)
