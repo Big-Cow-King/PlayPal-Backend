@@ -1,7 +1,23 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from events.models import Event, Sport
+from events.models import Attachment, Event, Sport
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attachment
+        fields = '__all__'
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        return Attachment.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.file = validated_data.get('file', instance.file)
+        instance.save()
+        return instance
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -29,8 +45,12 @@ class EventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         created_at = timezone.now()
         updated_at = timezone.now()
-        return Event.objects.create(created_at=created_at,
-                                    updated_at=updated_at, **validated_data)
+        attachments = validated_data.pop('attachments', [])
+        event = Event.objects.create(created_at=created_at,
+                                     updated_at=updated_at, **validated_data)
+        for attachment in attachments:
+            Attachment.objects.create(event=event, **attachment)
+        return event
 
     def update(self, instance, validated_data):
         instance.updated_at = timezone.now()
@@ -43,7 +63,6 @@ class EventSerializer(serializers.ModelSerializer):
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
         sports = validated_data.pop('sports', instance.sports)
-
         if sports:
             for sport in sports:
                 try:
@@ -51,6 +70,11 @@ class EventSerializer(serializers.ModelSerializer):
                 except Sport.DoesNotExist:
                     sport = Sport.objects.create(name=sport)
                 instance.sports.add(sport)
+
+        attachments = validated_data.pop('attachments', [])
+        if attachments:
+            for attachment in attachments:
+                Attachment.objects.create(event=instance, **attachment)
 
         instance.players.add(
             *validated_data.get('players', instance.players.all()))
