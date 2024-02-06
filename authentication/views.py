@@ -33,3 +33,5 @@ def send_response(status, message, error=None, token=None):
         response_data['token'] = token
 
     return JsonResponse(response_data, status=status)
+
+
