@@ -41,3 +41,4 @@ class Event(models.Model):
     max_players = models.IntegerField()
     owner = models.ForeignKey('auth.User', related_name='events', on_delete=models.CASCADE) # TODO: Need to be edited after merging with user app
     admins = models.ManyToManyField('auth.User', related_name='admin_events') # TODO: Need to be edited after merging with user app
+    location = models.CharField(max_length=100)
