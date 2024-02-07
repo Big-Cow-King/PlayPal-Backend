@@ -1,15 +1,15 @@
-from django.http import HttpResponse, HttpResponseBadRequest, \
-    HttpResponseRedirect
-# yourappname/views.py
-from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.generics import CreateAPIView
 
+from registration.serializers import UserSerializer
+
+
+class SignUpView(CreateAPIView):
+    queryset = User.objects.all()  # Declare the set of objects to operate on
+    serializer_class = UserSerializer
 
 def send_response(status, message, error=None):
     """
@@ -47,11 +47,12 @@ def register_user(request):
             messages = f'FAILED: email {email} creation failed - email already exists'
             return send_response(409, messages, error)
         if username != '' and password != '' and email != '':
-            User.objects.create_user(username=username, password=password,email=email)
+            User.objects.create_user(username=username, password=password
+                                     ,email=email)
             messages = f'Account created for {username}!'
             return send_response(200, messages)
         else:
-            error = {"error": [username, password,email]}
+            error = {"error": [username, password ,email]}
             messages = f'FAILED: Account creation failed!'
             return send_response(400, messages, error)
     else:
