@@ -60,6 +60,7 @@ class EventSerializer(serializers.ModelSerializer):
         instance.title = validated_data.pop('title', instance.title)
         instance.description = validated_data.pop('description',
                                                   instance.description)
+        instance.content = validated_data.pop('content', instance.content)
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
         sports = validated_data.pop('sports', instance.sports)

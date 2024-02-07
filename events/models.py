@@ -33,7 +33,8 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     title = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(max_length=50)
+    content = models.TextField(max_length=1000)
     sports = models.ManyToManyField(Sport)
     players = models.ManyToManyField('auth.User') # TODO: Need to be edit after merging with user app
     level = models.TextField(choices=level_choices.items())
