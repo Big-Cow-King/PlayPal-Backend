@@ -24,7 +24,7 @@ class EventOneView(RetrieveAPIView):
     serializer_class = EventSerializer
 
     def get_object(self):
-        return Event.objects.get(id=self.kwargs.get('id'))
+        return get_object_or_404(Event, id=self.kwargs.get('id'))
 
 
 class EventUpdateView(UpdateAPIView):
