@@ -19,27 +19,21 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'admins', 'players', 'sports']
-        sports = SportSerializer(many=True)
+        read_only_fields = ['id', 'created_at', 'updated_at', 'owner']
+
+        sport = SportSerializer(read_only=True)
+        sport_data = serializers.CharField(write_only=True)
+        attachment_data = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        created_at = timezone.now()
-        updated_at = timezone.now()
-        sports = validated_data.pop('sports')
-        attchment = validated_data.pop('attachment')
-        if attchment:
-            validated_data['attachment'] = base64.b64decode(attchment)
-        event = Event.objects.create(created_at=created_at,
-                                     updated_at=updated_at,
-                                     owner=self.context['request'].user,
+        sport_data = validated_data.pop('sport_data').lower()
+        attachment_data = validated_data.pop('attachment_data')
+        if attachment_data:
+            validated_data['attachment_data'] = base64.b64decode(attachment_data)
+        event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
-        for name in sports:
-            name = name.lower()
-            try:
-                sport = Sport.objects.get(name=name)
-            except Sport.DoesNotExist:
-                sport = Sport.objects.create(name=name)
-            event.sports.add(sport)
+        event.sport = Sport.objects.get_or_create(name=sport_data)[0]
+
         return event
 
     def update(self, instance, validated_data):
@@ -52,16 +46,8 @@ class EventSerializer(serializers.ModelSerializer):
         instance.content = validated_data.pop('content', instance.content)
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
-        sports = validated_data.pop('sports')
-        if sports:
-            instance.sports.clear()
-            for name in sports:
-                name = name.lower()
-                try:
-                    sport = Sport.objects.get(name=name)
-                except Sport.DoesNotExist:
-                    sport = Sport.objects.create(name=name)
-                instance.sports.add(sport)
+        sport_data = validated_data.pop('sport').lower()
+        instance.sport = Sport.objects.get_or_create(name=sport_data)[0]
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))

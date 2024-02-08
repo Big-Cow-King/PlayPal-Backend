@@ -30,7 +30,7 @@ class Event(models.Model):
     attachment = models.ImageField(upload_to='static/events/attachments/')
     description = models.TextField(max_length=50)
     content = models.TextField(max_length=1000)
-    sports = models.ManyToManyField(Sport)
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='events')
     players = models.ManyToManyField('auth.User') # TODO: Need to be edit after merging with user app
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
