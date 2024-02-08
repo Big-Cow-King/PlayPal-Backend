@@ -1,23 +1,8 @@
+import base64
 from django.utils import timezone
 from rest_framework import serializers
 
-from events.models import Attachment, Event, Sport
-
-
-class AttachmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Attachment
-        fields = '__all__'
-        read_only_fields = ['id']
-
-    def create(self, validated_data):
-        return Attachment.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name')
-        instance.file = validated_data.get('file')
-        instance.save()
-        return instance
+from events.models import Event, Sport
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -40,14 +25,14 @@ class EventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         created_at = timezone.now()
         updated_at = timezone.now()
-        attachments = validated_data.pop('attachments')
         sports = validated_data.pop('sports')
+        attchment = validated_data.pop('attachment')
+        if attchment:
+            validated_data['attachment'] = base64.b64decode(attchment)
         event = Event.objects.create(created_at=created_at,
                                      updated_at=updated_at,
                                      owner=self.context['request'].user,
                                      **validated_data)
-        for attachment in attachments:
-            Attachment.objects.create(event=event, **attachment)
         for name in sports:
             name = name.lower()
             try:
@@ -77,11 +62,6 @@ class EventSerializer(serializers.ModelSerializer):
                 except Sport.DoesNotExist:
                     sport = Sport.objects.create(name=name)
                 instance.sports.add(sport)
-
-        attachments = validated_data.pop('attachments', [])
-        if attachments:
-            for attachment in attachments:
-                Attachment.objects.create(event=instance, **attachment)
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))
