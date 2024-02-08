@@ -34,7 +34,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'admins', 'players']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'admins', 'players', 'sports']
         sports = SportSerializer(many=True)
 
     def create(self, validated_data):
@@ -69,13 +69,14 @@ class EventSerializer(serializers.ModelSerializer):
                                                   instance.max_players)
         sports = validated_data.pop('sports')
         if sports:
+            instance.sports.clear()
             for name in sports:
                 name = name.lower()
                 try:
                     sport = Sport.objects.get(name=name)
                 except Sport.DoesNotExist:
                     sport = Sport.objects.create(name=name)
-                instance.sports.set(sport)
+                instance.sports.add(sport)
 
         attachments = validated_data.pop('attachments', [])
         if attachments:
