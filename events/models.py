@@ -27,7 +27,7 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     title = models.CharField(max_length=100)
-    attachment = models.ImageField(upload_to='static/events/attachments/',
+    attachment = models.ImageField(upload_to='events/attachments/',
                                    null=True, blank=True)
     description = models.TextField(max_length=50)
     content = models.TextField(max_length=1000)
