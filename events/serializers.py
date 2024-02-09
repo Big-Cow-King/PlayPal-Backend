@@ -19,7 +19,7 @@ class SportSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
     sport_data = serializers.CharField(write_only=True)
-    attachment_data = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    attachment_data = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = Event
@@ -57,12 +57,17 @@ class EventSerializer(serializers.ModelSerializer):
         sport_data = validated_data.pop('sport_data', '').lower()
         instance.sport = Sport.objects.get_or_create(name=sport_data)[0]
 
-        attachment_data = validated_data.pop('attachment_data', None)
-        if attachment_data:
-            format, imgstr = attachment_data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name=f'event-{instance.title}.{ext}')
-            instance.attachment = data
+        try:
+            attachment_data = validated_data.pop('attachment_data')
+            if attachment_data:
+                format, imgstr = attachment_data.split(';base64,')
+                ext = format.split('/')[-1]
+                data = ContentFile(base64.b64decode(imgstr), name=f'event-{instance.title}.{ext}')
+                instance.attachment = data
+            else:
+                instance.attachment = None
+        except KeyError:
+            pass
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))
