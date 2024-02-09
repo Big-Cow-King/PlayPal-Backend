@@ -19,7 +19,7 @@ class SportSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
     sport_data = serializers.CharField(write_only=True)
-    attachment_data = serializers.CharField(write_only=True, required=False)
+    attachment_data = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = Event
