@@ -39,7 +39,7 @@ class EventSerializer(serializers.ModelSerializer):
             validated_data['attachment'] = data
         event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
-        event.sport = Sport.objects.get_or_create(name=sport_data)[0]
+        event.sport = Sport.objects.get_or_create(name=sport_data)[0].id
 
         return event
 
@@ -54,7 +54,7 @@ class EventSerializer(serializers.ModelSerializer):
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
         sport_data = validated_data.pop('sport').lower()
-        instance.sport = Sport.objects.get_or_create(name=sport_data)[0]
+        instance.sport = Sport.objects.get_or_create(name=sport_data)[0].id
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))
