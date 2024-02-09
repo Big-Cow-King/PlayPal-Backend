@@ -1,34 +1,24 @@
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Profile
-from .serializers import ProfileSerializer
+from django.shortcuts import get_object_or_404
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+
+from userprofile.serializers import ProfileSerializer
+from userprofile.models import Profile
 
 
-class EditProfileView(APIView):
+class ProfileView(RetrieveAPIView):
+    serializer_class = ProfileSerializer
+
+    def get_object(self):
+        profile = Profile.objects.get_or_create(user=self.request.user)
+        return profile
+
+
+class UpdateProfileView(UpdateAPIView):
+    serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        try:
-            profile_instance = request.user.profile
-            serializer = ProfileSerializer(profile_instance, data=request.data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-        except ObjectDoesNotExist:
-            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        try:
-            profile = request.user.profile
-            serializer = ProfileSerializer(profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Profile.DoesNotExist:
-            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    def get_object(self):
+        user = get_object_or_404(User, id=self.request.user)
+        return get_object_or_404(Profile, user=user)
