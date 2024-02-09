@@ -8,12 +8,12 @@ from .models import Profile
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('username', 'email')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    email = serializers.EmailField(source='user.email')
+    email = serializers.EmailField(write_only=True, required=False, allow_blank=True, allow_null=True)
     avatar_data = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
 
     class Meta:
@@ -49,3 +49,4 @@ class ProfileSerializer(serializers.ModelSerializer):
             pass
 
         instance.save()
+        return instance

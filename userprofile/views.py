@@ -11,7 +11,7 @@ class ProfileView(RetrieveAPIView):
     serializer_class = ProfileSerializer
 
     def get_object(self):
-        profile = Profile.objects.get_or_create(user=self.request.user)
+        profile = Profile.objects.get_or_create(user=self.request.user)[0]
         return profile
 
 
@@ -20,5 +20,5 @@ class UpdateProfileView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        user = get_object_or_404(User, id=self.request.user)
+        user = get_object_or_404(User, id=self.request.user.id)
         return get_object_or_404(Profile, user=user)
