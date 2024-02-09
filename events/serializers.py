@@ -19,7 +19,7 @@ class SportSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
     sport_data = serializers.CharField(write_only=True)
-    attachment_data = serializers.CharField(write_only=True)
+    attachment_data = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Event
@@ -31,7 +31,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         sport_data = validated_data.pop('sport_data').lower()
-        attachment_data = validated_data.pop('attachment_data')
+        attachment_data = validated_data.pop('attachment_data', None)
         if attachment_data:
             format, imgstr = attachment_data.split(';base64,')
             ext = format.split('/')[-1]
