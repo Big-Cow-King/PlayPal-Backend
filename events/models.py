@@ -29,7 +29,7 @@ class Event(models.Model):
     title = models.CharField(max_length=100)
     attachment = models.ImageField(upload_to='events/attachments/',
                                    null=True, blank=True)
-    description = models.TextField(max_length=50, blank=True, null=True)
+    description = models.TextField(max_length=50)
     content = models.TextField(max_length=1000)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE,
                               related_name='events', null=True, blank=True)
