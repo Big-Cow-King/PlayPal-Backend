@@ -54,8 +54,15 @@ class EventSerializer(serializers.ModelSerializer):
         instance.content = validated_data.pop('content', instance.content)
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
-        sport_data = validated_data.pop('sport').lower()
+        sport_data = validated_data.pop('sport_data').lower()
         instance.sport = Sport.objects.get_or_create(name=sport_data)[0]
+
+        attachment_data = validated_data.pop('attachment_data')
+        if attachment_data:
+            format, imgstr = attachment_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'event-{instance.title}.{ext}')
+            instance.attachment = data
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))
