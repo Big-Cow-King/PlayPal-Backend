@@ -1,23 +1,9 @@
+import base64
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import serializers
 
-from events.models import Attachment, Event, Sport
-
-
-class AttachmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Attachment
-        fields = '__all__'
-        read_only_fields = ['id']
-
-    def create(self, validated_data):
-        return Attachment.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name')
-        instance.file = validated_data.get('file')
-        instance.save()
-        return instance
+from events.models import Event, Sport
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -31,30 +17,31 @@ class SportSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
+    sport = SportSerializer(read_only=True)
+    sport_data = serializers.CharField(write_only=True)
+    attachment_data = serializers.CharField(write_only=True)
+
     class Meta:
         model = Event
-        fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'admins', 'players', 'sports']
-        sports = SportSerializer(many=True)
+        fields = ('id', 'owner', 'start_time', 'end_time', 'title', 'attachment',
+                  'description', 'content', 'sport', 'sport_data', 'players',
+                  'level', 'age_group', 'max_players', 'admins', 'location',
+                  'attachment_data', 'created_at', 'updated_at')
+        read_only_fields = ['id', 'created_at', 'updated_at', 'owner']
 
     def create(self, validated_data):
-        created_at = timezone.now()
-        updated_at = timezone.now()
-        attachments = validated_data.pop('attachments')
-        sports = validated_data.pop('sports')
-        event = Event.objects.create(created_at=created_at,
-                                     updated_at=updated_at,
-                                     owner=self.context['request'].user,
+        sport_data = validated_data.pop('sport_data').lower()
+        attachment_data = validated_data.pop('attachment_data')
+        if attachment_data:
+            format, imgstr = attachment_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'event-{validated_data["title"]}.{ext}')
+            validated_data['attachment'] = data
+        event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
-        for attachment in attachments:
-            Attachment.objects.create(event=event, **attachment)
-        for name in sports:
-            name = name.lower()
-            try:
-                sport = Sport.objects.get(name=name)
-            except Sport.DoesNotExist:
-                sport = Sport.objects.create(name=name)
-            event.sports.add(sport)
+        event.sport = Sport.objects.get_or_create(name=sport_data)[0]
+        event.save()
+
         return event
 
     def update(self, instance, validated_data):
@@ -67,21 +54,15 @@ class EventSerializer(serializers.ModelSerializer):
         instance.content = validated_data.pop('content', instance.content)
         instance.max_players = validated_data.pop('max_players',
                                                   instance.max_players)
-        sports = validated_data.pop('sports')
-        if sports:
-            instance.sports.clear()
-            for name in sports:
-                name = name.lower()
-                try:
-                    sport = Sport.objects.get(name=name)
-                except Sport.DoesNotExist:
-                    sport = Sport.objects.create(name=name)
-                instance.sports.add(sport)
+        sport_data = validated_data.pop('sport_data', '').lower()
+        instance.sport = Sport.objects.get_or_create(name=sport_data)[0]
 
-        attachments = validated_data.pop('attachments', [])
-        if attachments:
-            for attachment in attachments:
-                Attachment.objects.create(event=instance, **attachment)
+        attachment_data = validated_data.pop('attachment_data', None)
+        if attachment_data:
+            format, imgstr = attachment_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'event-{instance.title}.{ext}')
+            instance.attachment = data
 
         instance.players.set(
             validated_data.get('players', instance.players.all()))
