@@ -1,4 +1,5 @@
 import base64
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -16,20 +17,26 @@ class SportSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
+    sport = SportSerializer(read_only=True)
+    sport_data = serializers.CharField(write_only=True)
+    attachment_data = serializers.CharField(write_only=True)
+
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = ('id', 'owner', 'start_time', 'end_time', 'title', 'attachment',
+                  'description', 'content', 'sport', 'sport_data', 'players',
+                  'level', 'age_group', 'max_players', 'admins', 'location',
+                  'attachment_data', 'created_at', 'updated_at')
         read_only_fields = ['id', 'created_at', 'updated_at', 'owner']
-
-        sport = SportSerializer(read_only=True)
-        sport_data = serializers.CharField(write_only=True)
-        attachment_data = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
         sport_data = validated_data.pop('sport_data').lower()
         attachment_data = validated_data.pop('attachment_data')
         if attachment_data:
-            validated_data['attachment_data'] = base64.b64decode(attachment_data)
+            format, imgstr = attachment_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'event-{validated_data["title"]}.{ext}')
+            validated_data['attachment'] = data
         event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
         event.sport = Sport.objects.get_or_create(name=sport_data)[0]
