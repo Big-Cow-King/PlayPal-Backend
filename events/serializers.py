@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from events.models import Event, Sport
+from userprofile.serializers import ProfileSerializer
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -20,14 +21,15 @@ class EventSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
     sport_data = serializers.CharField(write_only=True)
     attachment_data = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
+    owner_profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = Event
-        fields = ('id', 'owner', 'start_time', 'end_time', 'title', 'attachment',
+        fields = ('id', 'owner', 'owner_profile', 'start_time', 'end_time', 'title', 'attachment',
                   'description', 'content', 'sport', 'sport_data', 'players',
                   'level', 'age_group', 'max_players', 'admins', 'location',
                   'attachment_data', 'created_at', 'updated_at')
-        read_only_fields = ['id', 'created_at', 'updated_at', 'owner']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'owner_profile']
 
     def create(self, validated_data):
         sport_data = validated_data.pop('sport_data').lower()
