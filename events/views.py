@@ -1,4 +1,5 @@
-from django.shortcuts import get_object_or_404, render
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, \
     UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -47,7 +48,10 @@ class EventJoinView(UpdateAPIView):
         return get_object_or_404(Event, id=eid)
 
     def update(self, request, *args, **kwargs):
-        event = self.get_object()
-        event.players.add(request.user)
+        event = get_object_or_404(Event, id=request.data.get('id'))
+        user = request.user
+        if user in event.players.all():
+            return JsonResponse({'message': 'You are already in this event'}, status=400)
+        event.players.add(user)
         event.save()
-        return event
+        return JsonResponse({'message': 'Joined event successfully!'}, status=200)
