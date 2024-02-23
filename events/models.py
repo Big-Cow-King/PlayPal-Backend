@@ -29,8 +29,8 @@ class Event(models.Model):
     title = models.CharField(max_length=100)
     attachment = models.ImageField(upload_to='events/attachments/',
                                    null=True, blank=True)
-    description = models.TextField(max_length=50)
-    content = models.TextField(max_length=1000)
+    description = models.TextField(max_length=1000)
+    content = models.TextField()
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE,
                               related_name='events', null=True, blank=True)
     players = models.ManyToManyField('auth.User', blank=True)  # TODO: Need to be edit after merging with user app
