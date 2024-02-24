@@ -39,9 +39,13 @@ class EventSerializer(serializers.ModelSerializer):
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(imgstr), name=f'event-{validated_data["title"]}.{ext}')
             validated_data['attachment'] = data
+        players = validated_data.pop('players', [])
+        admins = validated_data.pop('admins', [])
         event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
         event.sport = Sport.objects.get_or_create(name=sport_data)[0]
+        event.players.set(players)
+        event.admins.set(admins)
         event.save()
 
         return event
