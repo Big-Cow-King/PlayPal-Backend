@@ -27,7 +27,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ('id', 'owner', 'owner_profile', 'start_time', 'end_time', 'title', 'attachment',
                   'description', 'content', 'sport', 'sport_data', 'players',
-                  'level', 'age_group', 'max_players', 'admins', 'location',
+                  'level', 'age_group', 'public_event', 'max_players', 'admins', 'location',
                   'attachment_data', 'created_at', 'updated_at')
         read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'owner_profile']
 
@@ -55,6 +55,7 @@ class EventSerializer(serializers.ModelSerializer):
         instance.start_time = validated_data.pop('start_time', instance.start_time)
         instance.end_time = validated_data.pop('end_time', instance.end_time)
         instance.title = validated_data.pop('title', instance.title)
+        instance.public_event = validated_data.pop('public_event', instance.public_event)
         instance.description = validated_data.pop('description',
                                                   instance.description)
         instance.content = validated_data.pop('content', instance.content)
