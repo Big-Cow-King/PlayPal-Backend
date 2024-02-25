@@ -22,9 +22,9 @@ class Event(models.Model):
         'S': 'Seniors'
     }
 
-    public_event_choices = {
-        'Y': 'Yes',
-        'N': 'No'
+    visibility_choices = {
+        'Public': 'Public',
+        'Private': 'Private'
     }
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -41,7 +41,7 @@ class Event(models.Model):
     players = models.ManyToManyField('auth.User', blank=True)  # TODO: Need to be edit after merging with user app
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
-    public_event = models.TextField(choices=public_event_choices.items(), default='Y')
+    visibility = models.TextField(choices=visibility_choices.items(), default='Public')
     max_players = models.IntegerField()
     owner = models.ForeignKey('auth.User', related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
