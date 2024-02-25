@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from userprofile.models import Profile
 
@@ -40,21 +41,15 @@ class Event(models.Model):
     content = models.TextField()
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE,
                               related_name='events', null=True, blank=True)
-    players = models.ManyToManyField(Profile, blank=True)
+    players = models.ManyToManyField(User, blank=True)
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
     visibility = models.TextField(choices=visibility_choices.items(),
                                   default='Public')
     max_players = models.IntegerField()
-    owner = models.ForeignKey(Profile, related_name='events',
+    owner = models.ForeignKey(User, related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
                               default=None)
-    admins = models.ManyToManyField(Profile, related_name='admin_events',
+    admins = models.ManyToManyField(User, related_name='admin_events',
                                     blank=True)
     location = models.CharField(max_length=100)
-
-
-class Notification(models.Model):
-    playerid = models.IntegerField()
-    eventid = models.IntegerField()
-    description = models.TextField(max_length=1000)
