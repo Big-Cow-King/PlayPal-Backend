@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from events.models import Event, Sport
+from notification.models import Notification
 from userprofile.serializers import ProfileSerializer
 
 
@@ -63,6 +64,7 @@ class EventSerializer(serializers.ModelSerializer):
         return event
 
     def update(self, instance, validated_data):
+        validated_data_copy = validated_data.copy()
         instance.updated_at = timezone.now()
         instance.start_time = validated_data.pop('start_time',
                                                  instance.start_time)
@@ -96,4 +98,15 @@ class EventSerializer(serializers.ModelSerializer):
         instance.admins.set(
             validated_data.get('admins', instance.admins.all()))
         instance.save()
+        notification(instance, validated_data_copy)
         return instance
+
+
+def notification(instance, validated_data):
+    # Convert keys to strings and join them with commas
+    content = ', '.join([f'{key}: {value}' for key, value in validated_data.items()])
+    description = (f'Event "{instance.title}" has been updated, The following '
+                   f'detail has been changed - {content}')
+    for user in instance.players.all():
+        Notification.objects.create(player_id=user, event_id=instance,
+                                    description=description)

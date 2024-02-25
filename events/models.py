@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from userprofile.models import Profile
+
+
 # Create your models here.
 
 class Sport(models.Model):
@@ -42,10 +44,12 @@ class Event(models.Model):
     players = models.ManyToManyField(User, blank=True)
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
-    visibility = models.TextField(choices=visibility_choices.items(), default='Public')
+    visibility = models.TextField(choices=visibility_choices.items(),
+                                  default='Public')
     max_players = models.IntegerField()
     owner = models.ForeignKey(User, related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
                               default=None)
-    admins = models.ManyToManyField(User, related_name='admin_events', blank=True)
+    admins = models.ManyToManyField(User, related_name='admin_events',
+                                    blank=True)
     location = models.CharField(max_length=100)

@@ -11,5 +11,4 @@ urlpatterns = [
     path('join/', EventJoinView.as_view(), name='event-join'),
     path('delete/', EventDeleteView.as_view(), name='event-delete'),
     path('quit/', EventQuitView.as_view(), name='event-quit'),
-
 ]

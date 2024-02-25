@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'userprofile',
     'events',
     'registration',
+    'notification',
     'rest_framework_simplejwt',
     'corsheaders'
-
 ]
 
 MIDDLEWARE = [
