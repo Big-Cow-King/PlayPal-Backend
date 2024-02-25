@@ -1,6 +1,6 @@
 from django.db import models
 
-
+from userprofile.models import Profile
 # Create your models here.
 
 class Sport(models.Model):
@@ -38,13 +38,13 @@ class Event(models.Model):
     content = models.TextField()
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE,
                               related_name='events', null=True, blank=True)
-    players = models.ManyToManyField('auth.User', blank=True)  # TODO: Need to be edit after merging with user app
+    players = models.ManyToManyField(Profile, blank=True)
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
     visibility = models.TextField(choices=visibility_choices.items(), default='Public')
     max_players = models.IntegerField()
-    owner = models.ForeignKey('auth.User', related_name='events',
+    owner = models.ForeignKey(Profile, related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
-                              default=None)  # TODO: Need to be edited after merging with user app
-    admins = models.ManyToManyField('auth.User', related_name='admin_events', blank=True)  # TODO: Need to be edited after merging with user app
+                              default=None)
+    admins = models.ManyToManyField(Profile, related_name='admin_events', blank=True)
     location = models.CharField(max_length=100)
