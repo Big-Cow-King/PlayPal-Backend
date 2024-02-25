@@ -8,13 +8,11 @@ from events.models import Event
 from events.serializers import EventSerializer
 
 
-class NotificationListAPIView(APIView):
+class NotificationListAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, request, playerid):
-        notifications = Notification.objects.filter(playerid=playerid)
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer_class = NotificationSerializer
+    def get_object(self):
+        return get_object_or_404(Event, id=self.kwargs.get('playerid'))
 
 
 # Create your views here.
