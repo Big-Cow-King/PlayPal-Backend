@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import CreateAPIView
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, \
     OutstandingToken
+from rest_framework.permissions import IsAuthenticated
 from registration.serializers import UserSerializer
 
 
