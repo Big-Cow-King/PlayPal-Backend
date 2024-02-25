@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.permissions import IsAuthenticated
 
 from events.models import Event
-from events.serializers import EventSerializer
+from events.serializers import EventSerializer,NotificationSerializer
 
 
 class NotificationListAPIView(RetrieveAPIView):
