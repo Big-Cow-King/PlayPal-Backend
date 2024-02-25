@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import EventCreateView, EventDeleteView, EventListView, \
     EventOneView, EventQuitView,  EventUpdateView, EventJoinView, \
-    NotificationListView
+    NotificationListAPIView
 
 
 urlpatterns = [
