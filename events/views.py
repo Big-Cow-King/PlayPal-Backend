@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, \
-    UpdateAPIView
+    UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from events.models import Event
@@ -55,6 +55,16 @@ class EventJoinView(UpdateAPIView):
         event.players.add(user)
         event.save()
         return JsonResponse({'message': 'Joined event successfully!'}, status=200)
+
+
+class EventDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+    def get_object(self):
+        eid = self.request.data.get('id')
+        return get_object_or_404(Event, id=eid, owner=self.request.user)
 
 
 class EventQuitView(UpdateAPIView):
