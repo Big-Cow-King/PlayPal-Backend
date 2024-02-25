@@ -40,9 +40,8 @@ INSTALLED_APPS = [
     'events',
     'registration',
     'rest_framework_simplejwt',
-    'corsheaders'
+    'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
-
 ]
 
 MIDDLEWARE = [
