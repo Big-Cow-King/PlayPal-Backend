@@ -68,6 +68,8 @@ class EventSerializer(serializers.ModelSerializer):
                                                  instance.start_time)
         instance.end_time = validated_data.pop('end_time', instance.end_time)
         instance.title = validated_data.pop('title', instance.title)
+        instance.visibility = validated_data.pop('visibility',
+                                                 instance.visibility)
         instance.description = validated_data.pop('description',
                                                   instance.description)
         instance.content = validated_data.pop('content', instance.content)
