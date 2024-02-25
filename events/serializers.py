@@ -81,4 +81,16 @@ class EventSerializer(serializers.ModelSerializer):
         instance.admins.set(
             validated_data.get('admins', instance.admins.all()))
         instance.save()
+        notification(instance, validated_data)
         return instance
+
+def notification(instance, validated_data):
+    # Convert keys to strings and join them with commas
+    keys_str = ','.join(map(str, validated_data.keys()))
+    description = (f"Event{instance.id} has been updated, The following "
+                   f"content has been changed: {keys_str}")
+    for user in instance.players.all():
+        Notification.objects.create(playerid=user,eventid=instance.id,description=description)
+
+
+

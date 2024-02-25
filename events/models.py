@@ -1,6 +1,8 @@
 from django.db import models
 
 from userprofile.models import Profile
+
+
 # Create your models here.
 
 class Sport(models.Model):
@@ -41,10 +43,18 @@ class Event(models.Model):
     players = models.ManyToManyField(Profile, blank=True)
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
-    visibility = models.TextField(choices=visibility_choices.items(), default='Public')
+    visibility = models.TextField(choices=visibility_choices.items(),
+                                  default='Public')
     max_players = models.IntegerField()
     owner = models.ForeignKey(Profile, related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
                               default=None)
-    admins = models.ManyToManyField(Profile, related_name='admin_events', blank=True)
+    admins = models.ManyToManyField(Profile, related_name='admin_events',
+                                    blank=True)
     location = models.CharField(max_length=100)
+
+
+class Notification(models.Model):
+    playerid = models.IntegerField()
+    eventid = models.IntegerField()
+    description = models.TextField(max_length=1000)
