@@ -22,6 +22,11 @@ class Event(models.Model):
         'S': 'Seniors'
     }
 
+    visibility_choices = {
+        'Public': 'Public',
+        'Private': 'Private'
+    }
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     start_time = models.DateTimeField()
@@ -36,6 +41,7 @@ class Event(models.Model):
     players = models.ManyToManyField(Profile, blank=True)
     level = models.TextField(choices=level_choices.items())
     age_group = models.TextField(choices=age_group_choices.items())
+    visibility = models.TextField(choices=visibility_choices.items(), default='Public')
     max_players = models.IntegerField()
     owner = models.ForeignKey(Profile, related_name='events',
                               on_delete=models.CASCADE, null=True, blank=True,
