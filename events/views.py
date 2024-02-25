@@ -8,6 +8,15 @@ from events.models import Event
 from events.serializers import EventSerializer
 
 
+class NotificationListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, playerid):
+        notifications = Notification.objects.filter(playerid=playerid)
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # Create your views here.
 class EventCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -51,10 +60,12 @@ class EventJoinView(UpdateAPIView):
         event = get_object_or_404(Event, id=request.data.get('id'))
         user = request.user
         if user in event.players.all():
-            return JsonResponse({'message': 'You are already in this event'}, status=400)
+            return JsonResponse({'message': 'You are already in this event'},
+                                status=400)
         event.players.add(user)
         event.save()
-        return JsonResponse({'message': 'Joined event successfully!'}, status=200)
+        return JsonResponse({'message': 'Joined event successfully!'},
+                            status=200)
 
 
 class EventDeleteView(DestroyAPIView):
@@ -80,7 +91,8 @@ class EventQuitView(UpdateAPIView):
         event = get_object_or_404(Event, id=request.data.get('id'))
         user = request.user
         if user not in event.players.all():
-            return JsonResponse({'message': 'You are not in this event'}, status=400)
+            return JsonResponse({'message': 'You are not in this event'},
+                                status=400)
         event.players.remove(user)
         event.save()
         return JsonResponse({'message': 'Left event successfully!'}, status=200)
