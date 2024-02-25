@@ -20,16 +20,27 @@ class SportSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
     sport_data = serializers.CharField(write_only=True)
-    attachment_data = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
-    owner_profile = ProfileSerializer(read_only=True)
+    attachment_data = serializers.CharField(write_only=True, required=False,
+                                            allow_blank=True, allow_null=True)
+    owner_profile = ProfileSerializer(read_only=True, source='owner.profile')
+    admins_profile = ProfileSerializer(read_only=True, source='admins.profile',
+                                       many=True)
+    players_profile = ProfileSerializer(read_only=True,
+                                        source='players.profile', many=True)
 
     class Meta:
         model = Event
-        fields = ('id', 'owner', 'owner_profile', 'start_time', 'end_time', 'title', 'attachment',
-                  'description', 'content', 'sport', 'sport_data', 'players',
-                  'level', 'age_group', 'visibility', 'max_players', 'admins', 'location',
-                  'attachment_data', 'created_at', 'updated_at')
-        read_only_fields = ['id', 'created_at', 'updated_at', 'owner', 'owner_profile']
+        fields = (
+            'id', 'owner', 'owner_profile', 'start_time', 'end_time', 'title',
+            'attachment', 'description', 'content', 'sport', 'sport_data',
+            'players', 'level', 'age_group', 'visibility', 'max_players', 'admins',
+            'location', 'attachment_data', 'created_at', 'updated_at',
+            'admins_profile', 'players_profile'
+        )
+        read_only_fields = [
+            'id', 'created_at', 'updated_at', 'owner', 'owner_profile',
+            'admins_profile', 'players_profile'
+        ]
 
     def create(self, validated_data):
         sport_data = validated_data.pop('sport_data').lower()
@@ -37,7 +48,8 @@ class EventSerializer(serializers.ModelSerializer):
         if attachment_data:
             format, imgstr = attachment_data.split(';base64,')
             ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name=f'event-{validated_data["title"]}.{ext}')
+            data = ContentFile(base64.b64decode(imgstr),
+                               name=f'event-{validated_data["title"]}.{ext}')
             validated_data['attachment'] = data
         players = validated_data.pop('players', [])
         admins = validated_data.pop('admins', [])
@@ -52,10 +64,10 @@ class EventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.updated_at = timezone.now()
-        instance.start_time = validated_data.pop('start_time', instance.start_time)
+        instance.start_time = validated_data.pop('start_time',
+                                                 instance.start_time)
         instance.end_time = validated_data.pop('end_time', instance.end_time)
         instance.title = validated_data.pop('title', instance.title)
-        instance.visibility = validated_data.pop('visibility', instance.visibility)
         instance.description = validated_data.pop('description',
                                                   instance.description)
         instance.content = validated_data.pop('content', instance.content)
@@ -69,7 +81,8 @@ class EventSerializer(serializers.ModelSerializer):
             if attachment_data:
                 format, imgstr = attachment_data.split(';base64,')
                 ext = format.split('/')[-1]
-                data = ContentFile(base64.b64decode(imgstr), name=f'event-{instance.title}.{ext}')
+                data = ContentFile(base64.b64decode(imgstr),
+                                   name=f'event-{instance.title}.{ext}')
                 instance.attachment = data
             else:
                 instance.attachment = None
