@@ -1,15 +1,31 @@
-
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import CreateAPIView
-
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, \
+    OutstandingToken
 from registration.serializers import UserSerializer
 
 
 class SignUpView(CreateAPIView):
     queryset = User.objects.all()  # Declare the set of objects to operate on
     serializer_class = UserSerializer
+
+
+class LogOutView(APIView):
+    """
+    Reference: https://medium.com/django-rest/logout-django-rest-framework-eb1b53ac6d35
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        tokens = OutstandingToken.objects.filter(user_id=request.user.id)
+        for token in tokens:
+            t, _ = BlacklistedToken.objects.get_or_create(token=token)
+
+        return Response(status=status.HTTP_200_OK)
+
 
 def send_response(status, message, error=None):
     """
@@ -48,11 +64,11 @@ def register_user(request):
             return send_response(409, messages, error)
         if username != '' and password != '' and email != '':
             User.objects.create_user(username=username, password=password
-                                     ,email=email)
+                                     , email=email)
             messages = f'Account created for {username}!'
             return send_response(200, messages)
         else:
-            error = {"error": [username, password ,email]}
+            error = {"error": [username, password, email]}
             messages = f'FAILED: Account creation failed!'
             return send_response(400, messages, error)
     else:
