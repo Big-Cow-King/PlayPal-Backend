@@ -3,7 +3,7 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import serializers
 
-from events.models import Event, Sport
+from events.models import Event, Sport, Notification
 from userprofile.serializers import ProfileSerializer
 
 
