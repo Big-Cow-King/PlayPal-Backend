@@ -65,3 +65,22 @@ class EventDeleteView(DestroyAPIView):
     def get_object(self):
         eid = self.request.data.get('id')
         return get_object_or_404(Event, id=eid, owner=self.request.user)
+
+
+class EventQuitView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+    def get_object(self):
+        eid = self.request.data.get('id')
+        return get_object_or_404(Event, id=eid)
+
+    def update(self, request, *args, **kwargs):
+        event = get_object_or_404(Event, id=request.data.get('id'))
+        user = request.user
+        if user not in event.players.all():
+            return JsonResponse({'message': 'You are not in this event'}, status=400)
+        event.players.remove(user)
+        event.save()
+        return JsonResponse({'message': 'Left event successfully!'}, status=200)
