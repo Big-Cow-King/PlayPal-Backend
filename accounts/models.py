@@ -1,9 +1,9 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.models import User
 
 
-class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+# Create your models here.
+class User(AbstractUser):
     name = models.CharField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=40, blank=True, null=True)
     sports_you_can_play = models.TextField(blank=True, null=True)
@@ -17,4 +17,4 @@ class Profile(models.Model):
     phone_security = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.username}'s profile"
+        return self.username
