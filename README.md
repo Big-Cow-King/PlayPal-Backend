@@ -43,7 +43,7 @@ To start the Django REST Framework backend, follow these steps:
 
 #### Refresh Token
 
-- **Endpoint**: `accounts/token/refresh/`
+- **Endpoint**: `POST accounts/token/refresh/`
 - **Description**: Refreshes JWT token with the following mandatory fields:
     - refresh
 - **Success Response**: 200 OK with new access token.
@@ -72,13 +72,31 @@ To start the Django REST Framework backend, follow these steps:
 - **Endpoint**: `GET accounts/<int:id>/`
 - **Description**: Retrieves user profile by ID.
 - **Success Response**: 200 OK with user info.
+- **Example Response**:
+  ```json
+   {
+      "id": 1,
+      "username": "abc",
+      "email": "abc@abc.com",
+      "name": "andi",
+      "gender": "male",
+      "sports_you_can_play": "football, basketball",
+      "phone_no": "1234567890",
+      "age": 10,
+      "description": "hello_world",
+      "avatar": "a url to the avatar image",
+      "email_product": false,
+      "email_security": false,
+      "phone_security": false
+   }
+  ```
 
 ### Events
 
 #### Create Event
 
 - **Endpoint**: `POST events/create/`
-- **Description**: Creates events with the following mandatory fields and optional attachment:
+- **Description**: Creates events with the following mandatory fields:
   - start_time
   - end_time
   - title
@@ -89,6 +107,8 @@ To start the Django REST Framework backend, follow these steps:
   - age_group (C, T, A, S)
   - max_players
   - location
+- Optional field:
+  - attachment_data
 - **Success Response**: 201 Created with created event info.
 
 #### Get Event by ID
@@ -96,6 +116,36 @@ To start the Django REST Framework backend, follow these steps:
 - **Endpoint**: `GET events/<int:id>/`
 - **Description**: Retrieves event by ID.
 - **Success Response**: 200 OK with event info.
+- **Example Response**:
+    ```json
+     {
+      "id": 1,
+      "owner": (see Get User Profile playload above for user info),
+      "start_time": "2023-01-01T00:00:00Z",
+      "end_time": "2024-01-02T00:00:00Z",
+      "title": "hii",
+      "attachment": "a url to the attachment",
+      "description": "description",
+      "content": "content",
+      "sport": {
+          "id": 2,
+          "name": ""
+      },
+      "players": [
+          (see Get User Profile playload above for user info),
+      ],
+      "level": "B",
+      "age_group": "C",
+      "visibility": "Public",
+      "max_players": 10,
+      "admins": [
+          (see Get User Profile playload above for user info),
+      ],
+      "location": "location",
+      "created_at": "2024-02-26T01:00:35.951944Z",
+      "updated_at": "2024-02-26T01:02:03.325007Z"
+  }
+  ```
 
 #### Get All Events
 
@@ -146,6 +196,18 @@ To start the Django REST Framework backend, follow these steps:
 
 #### Get All Notifications
 
-- **Endpoint**: `GET notification/list/`
+- **Endpoint**: `GET notifications/list/`
 - **Description**: Retrieves all notifications for the current logged-in user.
 - **Success Response**: 200 OK with all notifications' info.
+- **Example Response**:
+  ```json
+   [
+      {
+        "id": 1,
+        "description": "Event \"name\" has been updated, The following detail has been changed - start_time: 2023-01-01 00:00:00+00:00, title: name",
+        "created_at": "2024-02-26T22:53:47.531023Z",
+        "player_id": 1,
+        "event_id": 1
+    }
+  ]
+  ```
