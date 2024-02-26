@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
 from events.models import Event, Sport
-from notification.models import Notification
+from notifications.models import Notification
 
 
 class SportSerializer(serializers.ModelSerializer):

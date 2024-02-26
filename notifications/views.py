@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from notification.models import Notification
+from notifications.models import Notification
 from .serializers import NotificationSerializer
 
 

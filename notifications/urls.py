@@ -3,5 +3,5 @@ from .views import NotificationListAPIView
 
 
 urlpatterns = [
-    path('list/', NotificationListAPIView.as_view(), name='notification-list'),
+    path('list/', NotificationListAPIView.as_view(), name='notifications-list'),
 ]
