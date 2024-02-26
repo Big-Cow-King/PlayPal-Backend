@@ -3,9 +3,9 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import serializers
 
+from accounts.serializers import UserSerializer
 from events.models import Event, Sport
 from notification.models import Notification
-from userprofile.serializers import ProfileSerializer
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -23,24 +23,20 @@ class EventSerializer(serializers.ModelSerializer):
     sport_data = serializers.CharField(write_only=True)
     attachment_data = serializers.CharField(write_only=True, required=False,
                                             allow_blank=True, allow_null=True)
-    owner_profile = ProfileSerializer(read_only=True, source='owner.profile')
-    admins_profile = ProfileSerializer(read_only=True, source='admins.profile',
-                                       many=True)
-    players_profile = ProfileSerializer(read_only=True,
-                                        source='players.profile', many=True)
+    owner = UserSerializer(read_only=True)
+    admins = UserSerializer(read_only=True, many=True)
+    players = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Event
         fields = (
-            'id', 'owner', 'owner_profile', 'start_time', 'end_time', 'title',
+            'id', 'owner', 'start_time', 'end_time', 'title',
             'attachment', 'description', 'content', 'sport', 'sport_data',
             'players', 'level', 'age_group', 'visibility', 'max_players', 'admins',
-            'location', 'attachment_data', 'created_at', 'updated_at',
-            'admins_profile', 'players_profile'
+            'location', 'attachment_data', 'created_at', 'updated_at'
         )
         read_only_fields = [
-            'id', 'created_at', 'updated_at', 'owner', 'owner_profile',
-            'admins_profile', 'players_profile'
+            'id', 'created_at', 'updated_at', 'owner', 'players', 'admins'
         ]
 
     def create(self, validated_data):
