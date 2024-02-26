@@ -1,7 +1,5 @@
 # Play-Pal Backend Setup and API Documentation
 
-Here's the updated documentation with all fields represented in list form:
-
 ## Backend Setup
 
 To start the Django REST Framework backend, follow these steps:
