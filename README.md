@@ -203,11 +203,28 @@ To start the Django REST Framework backend, follow these steps:
   ```json
    [
       {
-        "id": 1,
-        "description": "Event \"name\" has been updated, The following detail has been changed - start_time: 2023-01-01 00:00:00+00:00, title: name",
-        "created_at": "2024-02-26T22:53:47.531023Z",
-        "player_id": 1,
-        "event_id": 1
-    }
+        "id": 2,
+        "event_id": 1,
+        "event_title": "23",
+        "description": "The following detail has been changed - start_time: 2023-01-01 00:00:00+00:00, title: 23",
+        "created_at": "2024-02-27T01:28:40.340365Z",
+        "read": false
+      }
   ]
   ```
+#### Mark Notification as Read
+- **Endpoint**: `PATCH notifications/read/`
+- **Description**: Marks notification as read with the following mandatory fields:
+  - id
+- **Success Response**: 200 OK with notification info.
+- **Example Response**:
+    ```json
+     {
+        "id": 2,
+        "event_id": 1,
+        "event_title": "23",
+        "description": "The following detail has been changed - start_time: 2023-01-01 00:00:00+00:00, title: 23",
+        "created_at": "2024-02-27T01:28:40.340365Z",
+        "read": true
+    }
+    ```
