@@ -50,6 +50,7 @@ class EventSerializer(serializers.ModelSerializer):
             validated_data['attachment'] = data
         players = validated_data.pop('players', [])
         admins = validated_data.pop('admins', [])
+        admins.append(self.context['request'].user)
         event = Event.objects.create(owner=self.context['request'].user,
                                      **validated_data)
         event.sport = Sport.objects.get_or_create(name=sport_data)[0]
