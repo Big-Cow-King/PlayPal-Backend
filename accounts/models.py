@@ -6,7 +6,7 @@ from django.db import models
 class User(AbstractUser):
     name = models.CharField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=40, blank=True, null=True)
-    sports_you_can_play = models.TextField(blank=True, null=True)
+    sports_you_can_play = models.JSONField(blank=True, null=True, default=list)
     phone_no = models.CharField(max_length=20, blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
