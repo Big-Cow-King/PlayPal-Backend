@@ -52,6 +52,8 @@ class EventJoinView(UpdateAPIView):
         user = request.user
         if user in event.players.all():
             return JsonResponse({'message': 'You are already in this event'}, status=400)
+        if event.players.count() >= event.max_players:
+            return JsonResponse({'message': 'Event is full'}, status=400)
         event.players.add(user)
         event.save()
         return JsonResponse({'message': 'Joined event successfully!'}, status=200)
