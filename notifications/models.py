@@ -11,6 +11,7 @@ class Notification(models.Model):
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
     description = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.player_id.username} - {self.event_id.title} - {self.description}'
