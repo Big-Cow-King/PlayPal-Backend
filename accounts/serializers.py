@@ -4,10 +4,22 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from accounts.models import User
+from accounts.models import User, Sport
+
+
+class SportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sport
+        fields = '__all__'
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        return Sport.objects.create(**validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
+    sport = SportSerializer(read_only=True)
+    sports_you_can_play = serializers.CharField(write_only=True)
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(
@@ -19,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'name', 'gender',
+        fields = ('id', 'username', 'email', 'password', 'name', 'gender', 'sport',
                   'sports_you_can_play', 'phone_no', 'age', 'description',
                   'avatar', 'email_product', 'email_security', 'phone_security',
                   'avatar_data')
@@ -45,8 +57,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.name = validated_data.get('name', instance.name)
         instance.gender = validated_data.get('gender', instance.gender)
-        instance.sports_you_can_play = validated_data.get('sports_you_can_play',
-                                                          instance.sports_you_can_play)
+        # instance.sports_you_can_play = validated_data.get('sports_you_can_play',
+        #                                                   instance.sports_you_can_play)
         instance.phone_no = validated_data.get('phone_no', instance.phone_no)
         instance.age = validated_data.get('age', instance.age)
         instance.description = validated_data.get('description',
@@ -69,6 +81,15 @@ class UserSerializer(serializers.ModelSerializer):
                 instance.avatar = None
         except KeyError:
             pass
+
+        sports_names = validated_data.get('sports_you_can_play', None)
+        if sports_names is not None:
+            sports_instances = []
+            for name in sports_names:
+                sport, created = Sport.objects.get_or_create(name=name)
+                sports_instances.append(sport)
+
+            instance.sports_you_can_play.set(sports_instances)
 
         instance.save()
         return instance
