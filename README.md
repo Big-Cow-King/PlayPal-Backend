@@ -57,7 +57,7 @@ To start the Django REST Framework backend, follow these steps:
   - password
   - name
   - gender
-  - sports (a list of sports you can play, e.g. `"[\"football\", \"basketball\"]"`)
+  - sports_data (a list of sports you can play, e.g. `"[\"football\", \"basketball\"]"`)
   - phone_no
   - age
   - description
