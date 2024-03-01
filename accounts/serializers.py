@@ -80,8 +80,9 @@ class UserSerializer(serializers.ModelSerializer):
         except KeyError:
             pass
 
-        sports_names = validated_data.get('sports_data', None).replace('\\"', '').replace('"', '').strip('][').split(', ')
+        sports_names = validated_data.get('sports_data', None)
         if sports_names is not None:
+            sports_names = sports_names.replace('\\"', '').replace('"', '').strip('][').split(', ')
             sports_instances = []
             for name in sports_names:
                 sport, created = Sport.objects.get_or_create(name=name)
