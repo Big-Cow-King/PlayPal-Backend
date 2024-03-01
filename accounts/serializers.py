@@ -73,7 +73,7 @@ class UserSerializer(serializers.ModelSerializer):
                 format, imgstr = avatar_data.split(';base64,')
                 ext = format.split('/')[-1]
                 data = ContentFile(base64.b64decode(imgstr),
-                                   name=f'{instance.user.username}.{ext}')
+                                   name=f'{instance.username}.{ext}')
                 instance.avatar = data
             else:
                 instance.avatar = None
