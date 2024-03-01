@@ -89,6 +89,8 @@ class UserSerializer(serializers.ModelSerializer):
                 sports_instances.append(sport)
 
             instance.sports_you_can_play.set(sports_instances)
+        else:
+            instance.sports_you_can_play.clear()
 
         instance.save()
         return instance
