@@ -18,8 +18,8 @@ class SportSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    sport = SportSerializer(read_only=True)
-    sports_you_can_play = serializers.CharField(write_only=True)
+    sports_you_can_play = SportSerializer(read_only=True, many=True)
+    sports_data = serializers.CharField(write_only=True, required=False)
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(
@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'name', 'gender', 'sport',
+        fields = ('id', 'username', 'email', 'password', 'name', 'gender', 'sports_data',
                   'sports_you_can_play', 'phone_no', 'age', 'description',
                   'avatar', 'email_product', 'email_security', 'phone_security',
                   'avatar_data')
@@ -57,8 +57,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.name = validated_data.get('name', instance.name)
         instance.gender = validated_data.get('gender', instance.gender)
-        # instance.sports_you_can_play = validated_data.get('sports_you_can_play',
-        #                                                   instance.sports_you_can_play)
         instance.phone_no = validated_data.get('phone_no', instance.phone_no)
         instance.age = validated_data.get('age', instance.age)
         instance.description = validated_data.get('description',
@@ -82,7 +80,7 @@ class UserSerializer(serializers.ModelSerializer):
         except KeyError:
             pass
 
-        sports_names = validated_data.get('sports_you_can_play', None)
+        sports_names = validated_data.get('sports_data', None).replace('\\"', '').replace('"', '').strip('][').split(', ')
         if sports_names is not None:
             sports_instances = []
             for name in sports_names:

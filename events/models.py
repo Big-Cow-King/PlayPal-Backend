@@ -7,8 +7,6 @@ from accounts.models import User, Sport
 # Create your models here.
 
 
-
-
 class Event(models.Model):
     level_choices = {
         'B': 'Beginner',
