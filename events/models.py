@@ -1,13 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from accounts.models import User
+from accounts.models import User, Sport
 
 
 # Create your models here.
-
-class Sport(models.Model):
-    name = models.CharField(max_length=100, unique=True)
 
 
 class Event(models.Model):

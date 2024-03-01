@@ -3,19 +3,9 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import serializers
 
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, SportSerializer
 from events.models import Event, Sport
 from notifications.models import Notification
-
-
-class SportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sport
-        fields = '__all__'
-        read_only_fields = ['id']
-
-    def create(self, validated_data):
-        return Sport.objects.create(**validated_data)
 
 
 class EventSerializer(serializers.ModelSerializer):
