@@ -1,6 +1,8 @@
 from django.db.models import Q
 from rest_framework.generics import ListAPIView
 
+from accounts.models import User
+from accounts.serializers import UserSerializer
 from events.models import Event
 from events.serializers import EventSerializer
 
@@ -30,3 +32,13 @@ class EventSearchView(ListAPIView):
             events = events.filter(start_time__gte=start_time)
         return events
 
+
+class UserSearchView(ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        search_param = self.request.query_params.get('search_param', None)
+
+        return User.objects.filter(Q(username__icontains=search_param) |
+                                   Q(name__icontains=search_param) |
+                                   Q(email__icontains=search_param))
