@@ -12,24 +12,29 @@ class EventSearchView(ListAPIView):
     serializer_class = EventSerializer
 
     def get_queryset(self):
-        title = self.request.query_params.get('title', None)
-        sport = self.request.query_params.get('sport', None)
-        level = self.request.query_params.get('level', None)
-        age_group = self.request.query_params.get('age_group', None)
+        keywords = self.request.query_params.get('keywords', None)
+        sports = self.request.query_params.getlist('sports', None)
+        levels = self.request.query_params.getlist('levels', None)
+        age_groups = self.request.query_params.getlist('age_groups', None)
         start_time = self.request.query_params.get('start_time', None)
+        end_time = self.request.query_params.get('end_time', None)
 
         events = Event.objects.all()
-        if title:
-            events = events.filter(Q(title__icontains=title) |
-                                   Q(description__icontains=title))
-        if sport:
-            events = events.filter(sport__name__icontains=sport)
-        if level:
-            events = events.filter(level__icontains=level)
-        if age_group:
-            events = events.filter(age_group__icontains=age_group)
+        if keywords:
+            events = events.filter(Q(title__icontains=keywords) |
+                                   Q(description__icontains=keywords) |
+                                   Q(content__icontains=keywords))
+        if sports:
+            events = events.filter(sport__in=sports)
+        if levels:
+            events = events.filter(level__in=levels)
+        if age_groups:
+            events = events.filter(age_group__in=age_groups)
         if start_time:
             events = events.filter(start_time__gte=start_time)
+        if end_time:
+            events = events.filter(end_time__lte=end_time)
+
         return events
 
 
