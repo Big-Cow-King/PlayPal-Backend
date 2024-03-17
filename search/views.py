@@ -37,8 +37,8 @@ class UserSearchView(ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
-        search_param = self.request.query_params.get('search_param', None)
+        param = self.request.query_params.get('param', None)
 
-        return User.objects.filter(Q(username__icontains=search_param) |
-                                   Q(name__icontains=search_param) |
-                                   Q(email__icontains=search_param))
+        return User.objects.filter(Q(username__icontains=param) |
+                                   Q(name__icontains=param) |
+                                   Q(email__icontains=param))

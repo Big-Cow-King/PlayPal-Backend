@@ -241,3 +241,16 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
         "read": true
     }
     ```
+  
+#### Search
+
+- **Endpoint**: `GET search/{events, users}/`
+- **Description**: Searches for events or users with the following query parameter:
+  - for events:
+    - title
+    - sport
+    - level
+    - age_group
+    - start_time
+  - for users:
+    - param (match all username, email, and name)
