@@ -247,10 +247,15 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
 - **Endpoint**: `GET search/{events, users}/`
 - **Description**: Searches for events or users with the following query parameter:
   - for events:
-    - title
-    - sport
-    - level
-    - age_group
+    - keywords (match title, description, and content)
+    - sports (list of sports)
+    - levels (list of levels)
+    - age_groups (list of age groups)
     - start_time
+    - end_time
   - for users:
     - param (match all username, email, and name)
+- **Success Response**: 200 OK with search results.
+- **Example Request**: 
+  - Events:`GET search/events/?keywords=ball&levels=B&levels=I&age_groups=C&sports=football&sports=basketball&start_time=2023-01-01&end_time=2024-01-01`
+  - Users: `GET search/users/?param=abc`
