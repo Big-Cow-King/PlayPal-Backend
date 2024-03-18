@@ -11,5 +11,5 @@ class Feedback(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     content = models.TextField()
     rate = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='feedbacks')

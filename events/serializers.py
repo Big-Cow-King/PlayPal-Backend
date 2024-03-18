@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer, SportSerializer
+from feedbacks.serializers import FeedbackSerializer
 from events.models import Event, Sport
 from notifications.models import Notification
 
@@ -16,6 +17,7 @@ class EventSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     admins = UserSerializer(read_only=True, many=True)
     players = UserSerializer(read_only=True, many=True)
+    feedbacks = FeedbackSerializer(read_only=True, many=True)
 
     class Meta:
         model = Event
@@ -23,10 +25,10 @@ class EventSerializer(serializers.ModelSerializer):
             'id', 'owner', 'start_time', 'end_time', 'title',
             'attachment', 'description', 'content', 'sport', 'sport_data',
             'players', 'level', 'age_group', 'visibility', 'max_players', 'admins',
-            'location', 'attachment_data', 'created_at', 'updated_at'
+            'location', 'attachment_data', 'created_at', 'updated_at', 'feedbacks'
         )
         read_only_fields = [
-            'id', 'created_at', 'updated_at', 'owner', 'players', 'admins'
+            'id', 'created_at', 'updated_at', 'owner', 'players', 'admins', 'feedbacks'
         ]
 
     def create(self, validated_data):

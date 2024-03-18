@@ -81,7 +81,7 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
 
 #### Get User Profile by ID
 
-- **Endpoint**: `GET accounts/<int:id>/`
+- **Endpoint**: `GET accounts/{int:id}/`
 - **Description**: Retrieves user profile by ID.
 - **Success Response**: 200 OK with user info.
 - **Example Response**:
@@ -134,7 +134,7 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
 
 #### Get Event by ID
 
-- **Endpoint**: `GET events/<int:id>/`
+- **Endpoint**: `GET events/{int:id}/`
 - **Description**: Retrieves event by ID.
 - **Success Response**: 200 OK with event info.
 - **Example Response**:
@@ -164,7 +164,10 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
       ],
       "location": "location",
       "created_at": "2024-02-26T01:00:35.951944Z",
-      "updated_at": "2024-02-26T01:02:03.325007Z"
+      "updated_at": "2024-02-26T01:02:03.325007Z",
+      "feedbacks": [
+           (see Get All Feedbacks for Specific Event playload below for feedback info),
+      ]
   }
   ```
 
@@ -213,6 +216,64 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
   - id
 - **Success Response**: 200 OK with event info.
 
+### Feedback
+
+#### Create Feedback
+- **Endpoint**: `POST feedbacks/create/`
+- **Description**: Creates feedback with the following mandatory fields:
+  - rate
+  - content (String of integer between 1-5)
+  - event_id
+- **Success Response**: 201 Created with created feedback info.
+
+#### Get All Feedbacks for Specific Event
+- **Endpoint**: `GET feedbacks/list/{int:eid}/`
+- **Description**: Retrieves all feedbacks for a specific event.
+- **Success Response**: 200 OK with all feedbacks' info.
+- **Example Response**:
+  ```json
+   [
+      {
+        "id": 1,
+        "rate": 5,
+        "content": "good",
+        "event": 1,
+        "created_at": "2024-02-27T01:28:40.340365Z",
+        "updated_at": "2024-02-27T01:28:40.340365Z",
+        "user_id": (see Get User Profile playload above for user info)
+      }
+  ]
+  ```
+#### Get Feedback by event ID for Logged-in User
+- **Endpoint**: `GET feedbacks/{int:eid}/`
+- **Description**: Retrieves feedback by event ID for the current logged-in user.
+- **Success Response**: 200 OK with feedback info.
+- **Example Response**:
+  ```json
+   {
+      "id": 1,
+      "rate": 5,
+      "content": "good",
+      "event_id": 1,
+      "created_at": "2024-02-27T01:28:40.340365Z",
+      "updated_at": "2024-02-27T01:28:40.340365Z",
+      "user_id": (see Get User Profile playload above for user info)
+  }
+  ```
+  
+#### Update Feedback by ID
+- **Endpoint**: `PATCH feedbacks/update/`
+- **Description**: Updates feedback by ID with the following optional fields:
+  - eid (event id)
+  - rate
+  - content
+- **Success Response**: 200 OK with updated feedback info.
+
+#### Delete Feedback by ID
+- **Endpoint**: `DELETE feedbacks/delete/`
+- **Description**: Deletes feedback by ID with the following mandatory fields:
+  - eid (event id)
+
 ### Notifications
 
 #### Get All Notifications
@@ -249,8 +310,8 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
         "read": true
     }
     ```
-  
-#### Search
+
+### Search
 
 - **Endpoint**: `GET search/{events, users}/`
 - **Description**: Searches for events or users with the following query parameter:
