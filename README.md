@@ -20,12 +20,20 @@ To start the Django REST Framework backend, follow these steps:
    ```
 6. The backend should now be running at `http://localhost:8000/`.
 
-## Endpoints
-
 ### *--Pagination--*
 
 All list endpoints are paginated with 20 items per page. You can specify the page number in the query string, e.g. `http://localhost:8000/events/list/?page=2`.
+#### Example Response:
+```json
+{
+    "count": 0,
+    "next": null, //url to the next page
+    "previous": null, //url to the previous page
+    "results": [] //list of items, see the corresponding endpoint for specific results
+}
+```
 
+## Endpoints
 ### Accounts
 
 #### Register
