@@ -18,7 +18,7 @@ class EventListView(ListAPIView):
     serializer_class = EventSerializer
 
     def get_queryset(self):
-        return Event.objects.all()
+        return Event.objects.all().filter(visibility='Public')
 
 
 class EventOneView(RetrieveAPIView):

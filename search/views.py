@@ -19,7 +19,7 @@ class EventSearchView(ListAPIView):
         start_time = self.request.query_params.get('start_time', None)
         end_time = self.request.query_params.get('end_time', None)
 
-        events = Event.objects.all()
+        events = Event.objects.all().filter(visibility='Public')
         if keywords:
             events = events.filter(Q(title__icontains=keywords) |
                                    Q(description__icontains=keywords) |
