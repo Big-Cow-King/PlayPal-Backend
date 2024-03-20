@@ -25,15 +25,19 @@ class EventSearchView(ListAPIView):
                                    Q(description__icontains=keywords) |
                                    Q(content__icontains=keywords))
         if sports:
-            events = events.filter(sport__in=sports)
+            sports = [sport.lower() for sport in sports]
+            events = events.filter(sport__name__in=sports)
         if levels:
             events = events.filter(level__in=levels)
         if age_groups:
             events = events.filter(age_group__in=age_groups)
-        if start_time:
-            events = events.filter(start_time__gte=start_time)
-        if end_time:
-            events = events.filter(end_time__lte=end_time)
+        try:
+            if start_time:
+                events = events.filter(start_time__gte=start_time)
+            if end_time:
+                events = events.filter(end_time__lte=end_time)
+        except ValueError:
+            pass
 
         return events
 
