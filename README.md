@@ -108,7 +108,10 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
       "avatar": "a url to the avatar image",
       "email_product": false,
       "email_security": false,
-      "phone_security": false
+      "phone_security": false,
+      "create_events": [(See Get Event by ID playload below for event info)],
+      "join_events": [(See Get Event by ID playload below for event info)],
+      "admin_event": [(See Get Event by ID playload below for event info)],,
    }
   ```
 
