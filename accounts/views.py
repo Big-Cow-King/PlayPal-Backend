@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import User
 from accounts.serializers import UserSerializer
+from accounts.detail_serializers import UserDetailSerializer
 
 
 # Create your views here.
@@ -13,7 +14,7 @@ class SignUpView(CreateAPIView):
 
 
 class UserView(RetrieveAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
 
     def get_object(self):
         return get_object_or_404(User, id=self.kwargs.get('id'))
