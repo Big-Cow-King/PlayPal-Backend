@@ -253,6 +253,12 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
     }
     ```
   
+#### Delete Notification by ID
+- **Endpoint**: `DELETE notifications/delete/`
+- **Description**: Deletes notification by ID with the following mandatory fields:
+  - id
+- **Success Response**: 200 OK with notification info.
+  
 #### Search
 
 - **Endpoint**: `GET search/{events, users}/`
