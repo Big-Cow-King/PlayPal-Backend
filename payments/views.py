@@ -120,9 +120,12 @@ class PaymentVerifyView(APIView):
         if response.json().get('status') == 'APPROVED':
             payment = get_object_or_404(Payment, transaction_id=order_id,
                                         user=request.user)
-            print(payment)
             payment.status = 'Approved'
             payment.save()
+
+            event = payment.event
+            event.promotion = payment.amount
+            event.save()
         return Response(json.loads(response.text))
 
 
