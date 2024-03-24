@@ -10,3 +10,5 @@ class Payment(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Pending')
+    transaction_id = models.CharField(max_length=50, blank=True, null=True)

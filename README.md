@@ -259,7 +259,7 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
   - id
 - **Success Response**: 200 OK with notification info.
   
-#### Search
+### Search
 
 - **Endpoint**: `GET search/{events, users}/`
 - **Description**: Searches for events or users with the following query parameter:
@@ -276,3 +276,84 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
 - **Example Request**: 
   - Events:`GET search/events/?keywords=ball&levels=B&levels=I&age_groups=C&sports=football&sports=basketball&start_time=2023-01-01&end_time=2024-01-01`
   - Users: `GET search/users/?param=abc`
+
+### Make Payment
+Payment will be done using PayPal. The user will be redirected to the paypal payment page and after successful payment, the user will be redirected back to the website.
+The following is a sandbox account for testing on PayPal:
+- **Email**: ```sb-32zaq30062667@personal.example.com```
+- **Password**: ```4=z*mXly```
+
+#### Get Payment URL
+- **Endpoint**: `GET payment/create/`
+- **Description**: Creates a PayPal payment link with the following mandatory fields:
+  - event_id
+  - amount ($ You want to pay for promotion)
+  - return_url (URL to redirect after payment success)
+  - cancel_url (URL to redirect after payment cancel)
+- **Success Response**: 200 OK with payment URL.
+- **Example Response**:
+    ```json
+  {
+      "id": "4A885666C2430470A",
+      "status": "CREATED",
+      "link": "https://www.sandbox.paypal.com/checkoutnow?token=4A885666C2430470A"
+  }
+    ```
+  Redirect the user to the link to make the payment.
+
+#### Payment Success
+- **Endpoint**: `GET payment/verify/`
+- **Description**: Verifies the payment with the following mandatory fields:
+  - token (token will be given at params from PayPal after successful payment)
+- **Success Response**: 200 OK with payment info.
+- **Example Response**:
+    ```json
+  {
+    "id": "4A885666C2430470A",
+    "intent": "CAPTURE",
+    "status": "APPROVED",
+    "purchase_units": [
+        {
+          "reference_id": "default",
+            "amount": {
+              "currency_code": "CAD",
+              "value": "1.00"
+        },
+          "payee": {
+            "email_address": "sb-hujrj30059819@business.example.com",
+            "merchant_id": "PC8CK5LHWQL94"
+          }
+        }
+    ],
+    "create_time": "2024-03-24T18:51:52Z",
+    "links": [
+        {
+            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4A885666C2430470A",
+            "rel": "self",
+            "method": "GET"
+        },
+        {
+            "href": "https://www.sandbox.paypal.com/checkoutnow?token=4A885666C2430470A",
+            "rel": "approve",
+            "method": "GET"
+        },
+        {
+            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4A885666C2430470A",
+            "rel": "update",
+            "method": "PATCH"
+        },
+        {
+            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4A885666C2430470A/capture",
+            "rel": "capture",
+            "method": "POST"
+        }
+      ]
+  }
+    ```
+  Note that the payment status should be "APPROVED" is the user paid successfully.
+
+#### Payment Cancel
+- **Endpoint**: `GET payment/cancel/`
+- **Description**: Redirects the user to the cancel page after payment cancel with the following mandatory fields:
+  - token (token will be given at params from PayPal after payment cancel)
+- **Success Response**: 200 OK with {"message": "Payment canceled!"}.
