@@ -12,7 +12,7 @@ class NotificationListAPIView(ListAPIView):
     serializer_class = NotificationSerializer
 
     def get_queryset(self):
-        return Notification.objects.filter(player_id=self.request.user)
+        return Notification.objects.filter(player_id=self.request.user).order_by('-created_at')
 
 
 class NotificationReadAPIView(UpdateAPIView):
