@@ -11,7 +11,7 @@ from payments.models import Payment
 from payments.serializers import PaymentSerializer
 
 PAYPAL_CLIENT_ID = 'ATAHRPKshzdr3W5stAzAKRXBGr8RCcyC5Hi8M3Dklap0VWUFQAQzBTd1oOs9ldwNsxXDJRIx0WoG_fzv'
-ENCRYPT_SECRET = 'LOsKj0ijuz0RQmFRrPx5zQrRBKx32JSC1IpyZ7zqk2-yKpA4Aa71SvktYuQ52sIyekZBvsx5EQnCIVLE'
+ENCRYPT_S = 'LOsKj0ijuz0RQmFRrPx5zQrRBKx32JSC1IpyZ7zqk2-yKpA4Aa71SvktYuQ52sIyekZBvsx5EQnCIVLE'
 
 
 def rotate_secret(secret):
@@ -29,7 +29,7 @@ def get_access_token():
         'grant_type': 'client_credentials'
     }
     response = requests.post(url, headers=headers, data=data,
-                             auth=(PAYPAL_CLIENT_ID, rotate_secret(ENCRYPT_SECRET)))
+                             auth=(PAYPAL_CLIENT_ID, rotate_secret(ENCRYPT_S)))
     print(response.json())
     return response.json().get('access_token')
 
