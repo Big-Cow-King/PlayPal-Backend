@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from notifications.models import Notification
@@ -16,6 +16,14 @@ class NotificationListAPIView(ListAPIView):
 
 
 class NotificationReadAPIView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def get_object(self):
+        return get_object_or_404(Notification, id=self.request.data.get('id'), player_id=self.request.user)
+
+
+class NotificationDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = NotificationSerializer
 
