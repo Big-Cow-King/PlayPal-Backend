@@ -39,7 +39,7 @@ class EventSearchView(ListAPIView):
         except ValueError:
             pass
 
-        return events
+        return events.order_by('-promotion')
 
 
 class UserSearchView(ListAPIView):

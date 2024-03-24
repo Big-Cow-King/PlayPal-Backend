@@ -50,3 +50,4 @@ class Event(models.Model):
     admins = models.ManyToManyField(User, related_name='admin_events',
                                     blank=True)
     location = models.CharField(max_length=100)
+    promotion = models.DecimalField(max_digits=10, decimal_places=2, default=0)

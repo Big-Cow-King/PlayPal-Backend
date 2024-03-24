@@ -32,6 +32,7 @@ class Migration(migrations.Migration):
                 ('visibility', models.TextField(choices=[('Public', 'Public'), ('Private', 'Private')], default='Public')),
                 ('max_players', models.IntegerField()),
                 ('location', models.CharField(max_length=100)),
+                ('promotion', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
                 ('admins', models.ManyToManyField(blank=True, related_name='admin_events', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='own_events', to=settings.AUTH_USER_MODEL)),
                 ('players', models.ManyToManyField(blank=True, related_name='join_events', to=settings.AUTH_USER_MODEL)),
