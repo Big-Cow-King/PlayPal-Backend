@@ -284,7 +284,7 @@ The following is a sandbox account for testing on PayPal:
 - **Password**: ```4=z*mXly```
 
 #### Get Payment URL
-- **Endpoint**: `POST payment/create/`
+- **Endpoint**: `POST payments/create/`
 - **Description**: Creates a PayPal payment link with the following mandatory fields:
   - event_id
   - amount ($ You want to pay for promotion)
@@ -302,7 +302,7 @@ The following is a sandbox account for testing on PayPal:
   Redirect the user to the link to make the payment.
 
 #### Payment Success
-- **Endpoint**: `GET payment/verify/`
+- **Endpoint**: `GET payments/verify/`
 - **Description**: Verifies the payment with the following mandatory fields:
   - token (token will be given at params from PayPal after successful payment)
 - **Success Response**: 200 OK with payment info.
