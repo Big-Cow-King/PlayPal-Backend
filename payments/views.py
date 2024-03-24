@@ -11,7 +11,11 @@ from payments.models import Payment
 from payments.serializers import PaymentSerializer
 
 PAYPAL_CLIENT_ID = 'ATAHRPKshzdr3W5stAzAKRXBGr8RCcyC5Hi8M3Dklap0VWUFQAQzBTd1oOs9ldwNsxXDJRIx0WoG_fzv'
-SECRET = 'ELOsKj0ijuz0RQmFRrPx5zQrRBKx32JSC1IpyZ7zqk2-yKpA4Aa71SvktYuQ52sIyekZBvsx5EQnCIVL'
+ENCRYPT_SECRET = 'LOsKj0ijuz0RQmFRrPx5zQrRBKx32JSC1IpyZ7zqk2-yKpA4Aa71SvktYuQ52sIyekZBvsx5EQnCIVLE'
+
+
+def rotate_secret(secret):
+    return secret[-1] + secret[:-1]
 
 
 def get_access_token():
@@ -25,7 +29,8 @@ def get_access_token():
         'grant_type': 'client_credentials'
     }
     response = requests.post(url, headers=headers, data=data,
-                             auth=(PAYPAL_CLIENT_ID, SECRET))
+                             auth=(PAYPAL_CLIENT_ID, rotate_secret(ENCRYPT_SECRET)))
+    print(response.json())
     return response.json().get('access_token')
 
 
@@ -48,12 +53,13 @@ class CreatePaymentAPIView(APIView):
             return Response({'error': 'Amount is required'}, status=400)
         if not data.get('event_id'):
             return Response({'error': 'Event ID is required'}, status=400)
-        if not data.get('amount') > 0:
-            return Response({'error': 'Amount must be greater than 0'}, status=400)
+        if not int(data.get('amount')) > 0:
+            return Response({'error': 'Amount must be greater than 0'},
+                            status=400)
         if not data.get('return_url'):
-            return Response({'error': 'Return URL is required'}, status=400)
+            return Response({'error': 'return_url is required'}, status=400)
         if not data.get('cancel_url'):
-            return Response({'error': 'Cancel URL is required'}, status=400)
+            return Response({'error': 'cancel_url is required'}, status=400)
         amount = data.get('amount')
         event_id = data.get('event_id')
         return_url = data.get('return_url')
@@ -90,7 +96,8 @@ class CreatePaymentAPIView(APIView):
         response_to_client = {
             'id': response.json().get('id'),
             'status': response.json().get('status'),
-            'link': next((d for d in response.json().get('links') if d.get("rel") == "approve"), None)["href"]
+            'link': next((d for d in response.json().get('links') if
+                          d.get("rel") == "approve"), None)["href"]
         }
         return Response(response_to_client)
 
@@ -111,7 +118,8 @@ class PaymentVerifyView(APIView):
         }
         response = requests.get(url, headers=headers)
         if response.json().get('status') == 'APPROVED':
-            payment = get_object_or_404(Payment, transaction_id=order_id, user=request.user)
+            payment = get_object_or_404(Payment, transaction_id=order_id,
+                                        user=request.user)
             print(payment)
             payment.status = 'Approved'
             payment.save()
@@ -126,7 +134,8 @@ class PaymentCancelView(APIView):
         if not order_id:
             return Response({'error': 'token is required'}, status=400)
 
-        payment = get_object_or_404(Payment, transaction_id=order_id, user=request.user)
+        payment = get_object_or_404(Payment, transaction_id=order_id,
+                                    user=request.user)
         payment.status = 'Cancelled'
         payment.save()
         return Response({'message': 'Payment cancelled successfully'})
