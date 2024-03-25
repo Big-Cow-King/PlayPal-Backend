@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('start_time', models.DateTimeField()),
                 ('end_time', models.DateTimeField()),
                 ('title', models.CharField(max_length=100)),
-                ('attachment', models.ImageField(blank=True, null=True, upload_to='events/attachments/')),
+                ('attachment', models.ImageField(blank=True, default='events/attachments/placeholder.png', null=True, upload_to='events/attachments/')),
                 ('description', models.TextField(max_length=1000)),
                 ('content', models.TextField()),
                 ('level', models.TextField(choices=[('B', 'Beginner'), ('I', 'Intermediate'), ('A', 'Advanced'), ('P', 'Professional')])),

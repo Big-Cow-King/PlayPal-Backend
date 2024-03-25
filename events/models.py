@@ -33,7 +33,7 @@ class Event(models.Model):
     end_time = models.DateTimeField()
     title = models.CharField(max_length=100)
     attachment = models.ImageField(upload_to='events/attachments/',
-                                   null=True, blank=True)
+                                   null=True, blank=True, default='events/attachments/placeholder.png')
     description = models.TextField(max_length=1000)
     content = models.TextField()
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE,
