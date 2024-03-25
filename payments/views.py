@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from events.models import Event
 from payments.models import Payment
 from payments.serializers import PaymentSerializer
 
@@ -64,6 +65,8 @@ class CreatePaymentAPIView(APIView):
         event_id = data.get('event_id')
         return_url = data.get('return_url')
         cancel_url = data.get('cancel_url')
+
+        get_object_or_404(Event, id=event_id)
 
         access_token = get_access_token()
         url = 'https://api-m.sandbox.paypal.com/v2/checkout/orders'
@@ -124,7 +127,7 @@ class PaymentVerifyView(APIView):
             payment.save()
 
             event = payment.event
-            event.promotion = payment.amount
+            event.promotion += payment.amount
             event.save()
         return Response(json.loads(response.text))
 
