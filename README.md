@@ -32,6 +32,17 @@ All list endpoints are paginated with 20 items per page. You can specify the pag
     "results": [] //list of items, see the corresponding endpoint for specific results
 }
 ```
+***NOTE***: Notifications have different playload response
+#### Example Response:
+```json
+{
+    "count": 0,
+    "next": null, //url to the next page
+    "previous": null, //url to the previous page
+    "unread": 0, //number of unread notifications
+    "results": [] //list of items, see the corresponding endpoint for specific results
+}
+```
 
 ## Endpoints
 ### Accounts
