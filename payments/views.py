@@ -31,7 +31,6 @@ def get_access_token():
     }
     response = requests.post(url, headers=headers, data=data,
                              auth=(PAYPAL_CLIENT_ID, rotate_secret(ENCRYPT_S)))
-    print(response.json())
     return response.json().get('access_token')
 
 
